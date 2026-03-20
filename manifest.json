@@ -1,0 +1,14 @@
+{
+  "name": "الصلوات الدردرية على خير البرية",
+  "short_name": "الصلوات الدردرية",
+  "description": "أذكار وصلوات الدردير",
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#0a1628",
+  "background_color": "#faf8f3",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "icons/icon-192.png", "type": "image/png", "sizes": "192x192", "purpose": "any maskable" },
+    { "src": "icons/icon-512.png", "type": "image/png", "sizes": "512x512", "purpose": "any maskable" }
+  ]
+}
