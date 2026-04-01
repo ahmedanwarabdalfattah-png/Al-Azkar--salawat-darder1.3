@@ -3,12 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0a1628">
 <title>الصلوات الدردرية على خير البرية</title>
-<!-- PWA Manifest -->
 <link rel="manifest" href="manifest.json">
-<!-- Apple Touch Icon -->
 <link rel="apple-touch-icon" href="icons/icon-192.png">
 <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Noto+Naskh+Arabic:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
@@ -39,7 +38,6 @@ body.large-text{font-size:1.2rem}
 .stats-txt{font-size:13px;color:var(--g2);font-weight:600}
 .stats-actions{display:flex;gap:8px}
 .stats-btn{background:none;border:1px solid var(--g2);color:var(--g2);padding:4px 12px;border-radius:20px;font-family:'Noto Naskh Arabic',serif;font-size:12px;cursor:pointer;transition:all 0.2s}
-.stats-btn:hover{background:var(--g2);color:#fff}
 .reset-btn{background:none;border:1px solid var(--g2);color:var(--g2);padding:4px 12px;border-radius:20px;font-family:'Noto Naskh Arabic',serif;font-size:12px;cursor:pointer}
 .cards-wrap{padding:12px 12px 20px}
 .card{background:#fff;border-radius:14px;margin-bottom:12px;box-shadow:0 3px 16px rgba(0,0,0,0.07);border:1.5px solid rgba(0,0,0,0.04);overflow:hidden;transition:opacity 0.3s ease, transform 0.3s ease}
@@ -50,13 +48,11 @@ body.large-text{font-size:1.2rem}
 .cnt-info{font-size:13px;color:#999;width:100%;display:flex;justify-content:space-between;align-items:center}
 .cnt-info span{color:var(--g2);font-weight:700;font-size:14px}
 .counter-area{display:flex;align-items:center;gap:12px;width:100%}
-.cnt-btn{flex:1;height:54px;border-radius:14px;border:none;background:linear-gradient(135deg,var(--g2),var(--g1));color:#fff;font-size:26px;font-family:"Noto Naskh Arabic",serif;font-weight:700;cursor:pointer;box-shadow:0 6px 18px rgba(45,107,85,0.35);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;transition:transform 0.1s;letter-spacing:2px}
+.cnt-btn{flex:1;height:54px;border-radius:14px;border:none;background:linear-gradient(135deg,var(--g2),var(--g1));color:#fff;font-size:26px;font-family:"Noto Naskh Arabic",serif;font-weight:700;cursor:pointer;box-shadow:0 6px 18px rgba(45,107,85,0.35);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;transition:transform 0.1s}
 .cnt-btn:active{transform:scale(0.88)}
 .cnt-btn.done-btn{background:linear-gradient(135deg,#4caf50,#2e7d32)}
-.cnt-btn .btn-text{font-size:20px}
 .force-btn{width:44px;height:44px;border-radius:50%;background:rgba(0,0,0,0.05);border:1px solid rgba(0,0,0,0.1);color:var(--g2);font-size:20px;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center}
 .force-btn:active{transform:scale(0.9)}
-.force-btn:hover{background:var(--g2);color:#fff}
 .done-badge{display:none;background:linear-gradient(135deg,#4caf50,#2e7d32);color:#fff;font-size:11px;padding:2px 9px;border-radius:12px;font-weight:600}
 .card.done .done-badge{display:inline-block}
 .cat-hdr{text-align:center;padding:8px 0 4px}
@@ -210,7 +206,7 @@ body.large-text{font-size:1.2rem}
 <div class="toast" id="toast"></div>
 
 <script>
-// DATA from CSV (updated)
+// ========== ZIKR DATA (75 items from your CSV) ==========
 const DATA = [
   {id:"a1",cat:"الاستعاذات",zekr:"أَعُوذُ بِاللَّٰهِ مِنَ الشَّيْطَانِ الرَّجِيمِ",count:1},
   {id:"a2",cat:"أذكار مستهلة",zekr:"بِسْمِ اللَّٰهِ الرَّحْمَٰنِ الرَّحِيمِ ",count:1},
@@ -290,7 +286,7 @@ const DATA = [
 ];
 
 // BG gradients for reels
-const BG_THEMES=[
+const BG_THEMES = [
   'linear-gradient(160deg,#0a1628 0%,#1a3a5c 50%,#0d2137 100%)',
   'linear-gradient(160deg,#1a0a28 0%,#3a1a5c 50%,#1d0a37 100%)',
   'linear-gradient(160deg,#0a2810 0%,#1a5c2a 50%,#0d370f 100%)',
@@ -300,7 +296,7 @@ const BG_THEMES=[
   'linear-gradient(160deg,#28280a 0%,#5c5c1a 50%,#37370d 100%)'
 ];
 
-// Special backgrounds for prayers on the Prophet (category "الصلوات الدرديرية")
+// Special backgrounds for prayers on the Prophet
 const SPECIAL_BG_THEMES = [
   'linear-gradient(160deg, #2c3e50, #e67e22, #f1c40f)',
   'linear-gradient(160deg, #1e2a3a, #f39c12, #d35400)',
@@ -310,193 +306,168 @@ const SPECIAL_BG_THEMES = [
 ];
 
 // STATE
-let counters={}, likes={}, manualDays={}, calMonth=new Date(), currentCat=null;
+let counters = {}, likes = {}, manualDays = {}, calMonth = new Date(), currentCat = null;
 let undoStack = []; // store { id, previousCount }
-const TODAY=new Date().toISOString().slice(0,10);
+const TODAY = new Date().toISOString().slice(0,10);
 
 function load(){
-  try{counters=JSON.parse(localStorage.getItem('az_c')||'{}');}catch(e){}
-  try{likes=JSON.parse(localStorage.getItem('az_l')||'{}');}catch(e){}
-  try{manualDays=JSON.parse(localStorage.getItem('az_m')||'{}');}catch(e){}
-  // load font size preference
+  try{ counters = JSON.parse(localStorage.getItem('az_c')||'{}'); } catch(e){}
+  try{ likes = JSON.parse(localStorage.getItem('az_l')||'{}'); } catch(e){}
+  try{ manualDays = JSON.parse(localStorage.getItem('az_m')||'{}'); } catch(e){}
   let fontSize = localStorage.getItem('fontSize');
-  if(fontSize){
-    if(fontSize === 'small') document.body.classList.add('small-text');
-    else if(fontSize === 'large') document.body.classList.add('large-text');
-  }
+  if(fontSize === 'small') document.body.classList.add('small-text');
+  else if(fontSize === 'large') document.body.classList.add('large-text');
 }
-function saveC(){localStorage.setItem('az_c',JSON.stringify(counters));}
-function saveL(){localStorage.setItem('az_l',JSON.stringify(likes));}
-function saveM(){localStorage.setItem('az_m',JSON.stringify(manualDays));}
+function saveC(){ localStorage.setItem('az_c', JSON.stringify(counters)); }
+function saveL(){ localStorage.setItem('az_l', JSON.stringify(likes)); }
+function saveM(){ localStorage.setItem('az_m', JSON.stringify(manualDays)); }
 
-function getHistory(){try{return JSON.parse(localStorage.getItem('az_h')||'{}');}catch(e){return{};}}
-function saveHistory(h){localStorage.setItem('az_h',JSON.stringify(h));}
+function getHistory(){ try{ return JSON.parse(localStorage.getItem('az_h')||'{}'); } catch(e){ return {}; } }
+function saveHistory(h){ localStorage.setItem('az_h', JSON.stringify(h)); }
 
 function recordToday(){
-  const h=getHistory();
-  const done=DATA.filter(d=>(counters[d.id]||0)>=d.count).length;
-  h[TODAY]=Math.round((done/DATA.length)*100);
+  const h = getHistory();
+  const done = DATA.filter(d => (counters[d.id]||0) >= d.count).length;
+  h[TODAY] = Math.round((done/DATA.length)*100);
   saveHistory(h);
 }
 
 function showToast(msg){
-  const t=document.getElementById('toast');
-  t.textContent=msg; t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),2000);
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2000);
 }
 
-// PAGES
-function showPage(name,btn){
+// ===== PAGES =====
+function showPage(name, btn){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('pg-'+name).classList.add('active');
   btn.classList.add('active');
-  if(name==='feed') buildReels();
-  if(name==='cal') renderCal();
+  if(name === 'feed') buildReels();
+  if(name === 'cal') renderCal();
 }
 
 // ===== COUNTER =====
-const categories=[...new Set(DATA.map(d=>d.cat))];
+const categories = [...new Set(DATA.map(d=>d.cat))];
 
 function buildTabs(){
-  const el=document.getElementById('tabs');
-  const all=document.createElement('button');
-  all.className='tab-btn active';all.textContent='الكل';
-  all.onclick=()=>selectCat(null,all);
+  const el = document.getElementById('tabs');
+  const all = document.createElement('button');
+  all.className = 'tab-btn active'; all.textContent = 'الكل';
+  all.onclick = ()=>selectCat(null, all);
   el.appendChild(all);
   categories.forEach(c=>{
-    const b=document.createElement('button');
-    b.className='tab-btn';b.textContent=c;
-    b.onclick=()=>selectCat(c,b);
+    const b = document.createElement('button');
+    b.className = 'tab-btn'; b.textContent = c;
+    b.onclick = ()=>selectCat(c, b);
     el.appendChild(b);
   });
 }
 
-function selectCat(c,btn){
-  currentCat=c;
+function selectCat(c, btn){
+  currentCat = c;
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
-  btn.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
+  btn.scrollIntoView({behavior:'smooth', block:'nearest', inline:'center'});
   renderCards();
 }
 
 function renderCards(){
-  const con=document.getElementById('cards');con.innerHTML='';
-  // Filter out completed items
-  const filteredItems = (currentCat?DATA.filter(d=>d.cat===currentCat):DATA).filter(item => (counters[item.id]||0) < item.count);
-  let lastCat=null;
-  filteredItems.forEach((item,idx)=>{
-    if(item.cat!==lastCat&&!currentCat){
-      const h=document.createElement('div');h.className='cat-hdr';
-      h.innerHTML=`<div class="cat-name">✦ ${item.cat} ✦</div><div class="cat-line"></div>`;
-      con.appendChild(h);lastCat=item.cat;
+  const con = document.getElementById('cards'); con.innerHTML = '';
+  const filteredItems = (currentCat ? DATA.filter(d=>d.cat===currentCat) : DATA).filter(item => (counters[item.id]||0) < item.count);
+  let lastCat = null;
+  filteredItems.forEach(item => {
+    if(item.cat !== lastCat && !currentCat){
+      const h = document.createElement('div'); h.className = 'cat-hdr';
+      h.innerHTML = `<div class="cat-name">✦ ${item.cat} ✦</div><div class="cat-line"></div>`;
+      con.appendChild(h); lastCat = item.cat;
     }
-    const cur=counters[item.id]||0;
-    const times=item.count===1?'مرة واحدة':item.count===3?'ثلاث مرات':item.count+' مرات';
-    const card=document.createElement('div');
-    card.className='card'; card.id='card_'+item.id;
-    card.innerHTML=`<div class="card-body"><div class="zikr-txt">${item.zekr}</div></div>
-    <div class="card-foot">
-      <div class="cnt-info">${times}&nbsp;|&nbsp;<span id="ci_${item.id}">${cur}/${item.count}</span></div>
-      <div class="counter-area">
-        <div class="done-badge">✓ تم</div>
-        <button class="force-btn" onclick="forceComplete('${item.id}')" title="إنهاء الذكر فوراً">✓</button>
-        <button class="cnt-btn" id="cb_${item.id}" onclick="tap('${item.id}',this)">
-          <span class="btn-text"></span>
-        </button>
+    const cur = counters[item.id]||0;
+    const times = item.count===1?'مرة واحدة':item.count===3?'ثلاث مرات':item.count+' مرات';
+    const card = document.createElement('div');
+    card.className = 'card'; card.id = 'card_'+item.id;
+    card.innerHTML = `
+      <div class="card-body"><div class="zikr-txt">${item.zekr}</div></div>
+      <div class="card-foot">
+        <div class="cnt-info">${times}&nbsp;|&nbsp;<span id="ci_${item.id}">${cur}/${item.count}</span></div>
+        <div class="counter-area">
+          <div class="done-badge">✓ تم</div>
+          <button class="force-btn" onclick="forceComplete('${item.id}')" title="إنهاء الذكر فوراً">✓</button>
+          <button class="cnt-btn" id="cb_${item.id}" onclick="tap('${item.id}',this)"><span class="btn-text"></span></button>
+        </div>
       </div>
-    </div>`;
+    `;
     con.appendChild(card);
   });
   updateStats();
 }
 
-function tap(id,btn){
-  const item=DATA.find(d=>d.id===id);if(!item)return;
-  const cur=counters[id]||0;if(cur>=item.count)return;
-  const r=document.createElement('div');r.className='ripple';
-  btn.appendChild(r);setTimeout(()=>r.remove(),500);
-  counters[id]=cur+1;saveC();
-  const nc=counters[id],done=nc>=item.count;
-  document.getElementById('ci_'+id).textContent=nc+'/'+item.count;
+function tap(id, btn){
+  const item = DATA.find(d=>d.id===id); if(!item) return;
+  const cur = counters[id]||0; if(cur >= item.count) return;
+  const r = document.createElement('div'); r.className = 'ripple';
+  btn.appendChild(r); setTimeout(()=>r.remove(),500);
+  counters[id] = cur+1; saveC();
+  const nc = counters[id], done = nc >= item.count;
+  document.getElementById('ci_'+id).textContent = nc+'/'+item.count;
   if(done){
-    // record undo state
-    undoStack.push({ id: id, previousCount: cur });
-    // add fade-out animation to the card
-    const card=document.getElementById('card_'+id);
+    undoStack.push({ id, previousCount: cur });
+    const card = document.getElementById('card_'+id);
     if(card){
       card.classList.add('fade-out');
-      setTimeout(()=>{
-        renderCards(); // re-render without the completed card
-      }, 300);
-    } else {
-      renderCards();
-    }
-    if(navigator.vibrate)navigator.vibrate(30);
+      setTimeout(()=>renderCards(), 300);
+    } else renderCards();
+    if(navigator.vibrate) navigator.vibrate(30);
   }
-  updateStats();recordToday();
-  // Update reels progress if visible
-  const rpf=document.getElementById('rpf_'+id);
+  updateStats(); recordToday();
+  // update reels
+  const rpf = document.getElementById('rpf_'+id);
   if(rpf){
-    const pct=Math.min(100,Math.round((nc/item.count)*100));
-    rpf.style.width=pct+'%';
-    document.getElementById('rclbl_'+id).textContent=nc+'/'+item.count;
-    const icon=document.getElementById('rcicon_'+id);
-    if(done) { icon.classList.add('counted'); icon.textContent='✅'; }
+    const pct = Math.min(100, Math.round((nc/item.count)*100));
+    rpf.style.width = pct+'%';
+    document.getElementById('rclbl_'+id).textContent = nc+'/'+item.count;
+    const icon = document.getElementById('rcicon_'+id);
+    if(done) { icon.classList.add('counted'); icon.textContent = '✅'; }
   }
 }
 
 function forceComplete(id){
-  const item=DATA.find(d=>d.id===id);if(!item)return;
-  const cur=counters[id]||0;
-  if(cur>=item.count) return;
-  // record undo state
-  undoStack.push({ id: id, previousCount: cur });
-  counters[id]=item.count; saveC();
-  // trigger completion effect
-  const card=document.getElementById('card_'+id);
+  const item = DATA.find(d=>d.id===id); if(!item) return;
+  const cur = counters[id]||0; if(cur >= item.count) return;
+  undoStack.push({ id, previousCount: cur });
+  counters[id] = item.count; saveC();
+  const card = document.getElementById('card_'+id);
   if(card){
     card.classList.add('fade-out');
-    setTimeout(()=>{
-      renderCards();
-    }, 300);
-  } else {
-    renderCards();
-  }
+    setTimeout(()=>renderCards(), 300);
+  } else renderCards();
   updateStats(); recordToday();
-  // update reels
-  const rpf=document.getElementById('rpf_'+id);
+  const rpf = document.getElementById('rpf_'+id);
   if(rpf){
-    rpf.style.width='100%';
-    document.getElementById('rclbl_'+id).textContent=item.count+'/'+item.count;
-    const icon=document.getElementById('rcicon_'+id);
-    icon.classList.add('counted'); icon.textContent='✅';
+    rpf.style.width = '100%';
+    document.getElementById('rclbl_'+id).textContent = item.count+'/'+item.count;
+    const icon = document.getElementById('rcicon_'+id);
+    icon.classList.add('counted'); icon.textContent = '✅';
   }
   showToast('تم إكمال الذكر ✓');
 }
 
 function undoLast(){
-  if(undoStack.length===0){
-    showToast('لا يوجد شيء للتراجع');
-    return;
-  }
+  if(undoStack.length === 0){ showToast('لا يوجد شيء للتراجع'); return; }
   const last = undoStack.pop();
   counters[last.id] = last.previousCount;
   saveC();
   renderCards();
-  // also update reels progress if visible
   const item = DATA.find(d=>d.id===last.id);
   if(item){
     const pct = Math.min(100, Math.round((last.previousCount/item.count)*100));
     const rpf = document.getElementById('rpf_'+last.id);
     if(rpf){
-      rpf.style.width=pct+'%';
-      document.getElementById('rclbl_'+last.id).textContent=last.previousCount+'/'+item.count;
+      rpf.style.width = pct+'%';
+      document.getElementById('rclbl_'+last.id).textContent = last.previousCount+'/'+item.count;
       const icon = document.getElementById('rcicon_'+last.id);
-      if(last.previousCount<item.count) {
-        icon.classList.remove('counted');
-        icon.textContent='📿';
-      }
+      if(last.previousCount < item.count) { icon.classList.remove('counted'); icon.textContent = '📿'; }
     }
   }
   updateStats(); recordToday();
@@ -504,17 +475,17 @@ function undoLast(){
 }
 
 function updateStats(){
-  const total=DATA.length;
-  const done=DATA.filter(d=>(counters[d.id]||0)>=d.count).length;
-  const pct=Math.round((done/total)*100);
-  document.getElementById('stxt').textContent=`${done} من ${total} ذكر (${pct}%)`;
-  document.getElementById('pbar').style.width=pct+'%';
-  document.getElementById('allDone').classList.toggle('show',done===total);
+  const total = DATA.length;
+  const done = DATA.filter(d=>(counters[d.id]||0)>=d.count).length;
+  const pct = Math.round((done/total)*100);
+  document.getElementById('stxt').textContent = `${done} من ${total} ذكر (${pct}%)`;
+  document.getElementById('pbar').style.width = pct+'%';
+  document.getElementById('allDone').classList.toggle('show', done===total);
 }
 
 function resetAll(){
-  if(!confirm('إعادة تعيين جميع الأذكار؟'))return;
-  counters={}; saveC(); undoStack = []; renderCards();
+  if(!confirm('إعادة تعيين جميع الأذكار؟')) return;
+  counters = {}; saveC(); undoStack = []; renderCards();
 }
 
 // ===== FONT SIZE =====
@@ -524,7 +495,6 @@ function setFontSize(level){
   else if(level === 'large') document.body.classList.add('large-text');
   localStorage.setItem('fontSize', level);
 }
-
 document.getElementById('fontMinusBtn').addEventListener('click', ()=>{
   if(document.body.classList.contains('small-text')) setFontSize('normal');
   else if(document.body.classList.contains('large-text')) setFontSize('normal');
@@ -538,29 +508,23 @@ document.getElementById('fontPlusBtn').addEventListener('click', ()=>{
 document.getElementById('undoBtn').addEventListener('click', undoLast);
 
 // ===== TIKTOK REELS =====
-let reelsBuilt=false;
+let reelsBuilt = false;
 function buildReels(){
-  if(reelsBuilt)return;
-  reelsBuilt=true;
-  const con=document.getElementById('reels');
-  con.innerHTML='';
-  DATA.forEach((item,idx)=>{
-    // choose background: special if category includes "الصلوات الدرديرية"
+  if(reelsBuilt) return;
+  reelsBuilt = true;
+  const con = document.getElementById('reels'); con.innerHTML = '';
+  DATA.forEach((item, idx) => {
     let bg;
-    if(item.cat === "الصلوات الدرديرية"){
-      bg = SPECIAL_BG_THEMES[idx % SPECIAL_BG_THEMES.length];
-    } else {
-      bg = BG_THEMES[idx % BG_THEMES.length];
-    }
-    const isLiked=likes[item.id]||false;
-    const likeCount=parseInt(localStorage.getItem('lk_'+item.id)||String(Math.floor(Math.random()*50+5)));
-    const cur=counters[item.id]||0;
-    const pct=Math.min(100,Math.round((cur/item.count)*100));
-    const times=item.count===1?'مرة واحدة':item.count===3?'ثلاث مرات':item.count+' مرات';
-
-    const reel=document.createElement('div');
-    reel.className='reel';reel.id='reel_'+item.id;
-    reel.innerHTML=`
+    if(item.cat === "الصلوات الدرديرية") bg = SPECIAL_BG_THEMES[idx % SPECIAL_BG_THEMES.length];
+    else bg = BG_THEMES[idx % BG_THEMES.length];
+    const isLiked = likes[item.id]||false;
+    const likeCount = parseInt(localStorage.getItem('lk_'+item.id)||String(Math.floor(Math.random()*50+5)));
+    const cur = counters[item.id]||0;
+    const pct = Math.min(100, Math.round((cur/item.count)*100));
+    const times = item.count===1?'مرة واحدة':item.count===3?'ثلاث مرات':item.count+' مرات';
+    const reel = document.createElement('div');
+    reel.className = 'reel'; reel.id = 'reel_'+item.id;
+    reel.innerHTML = `
       <div class="reel-bg" style="background:${bg}"></div>
       <div class="reel-overlay"></div>
       <div class="reel-content">
@@ -596,102 +560,129 @@ function buildReels(){
   });
 }
 
-function reelCount(id,el,event){
-  const item=DATA.find(d=>d.id===id);if(!item)return;
-  const cur=counters[id]||0;if(cur>=item.count)return;
-  counters[id]=cur+1;saveC();
-  const nc=counters[id],done=nc>=item.count;
-  document.getElementById('rclbl_'+id).textContent=nc+'/'+item.count;
-  const pct=Math.min(100,Math.round((nc/item.count)*100));
-  document.getElementById('rpf_'+id).style.width=pct+'%';
-  const icon=document.getElementById('rcicon_'+id);
-  if(done){icon.classList.add('counted');icon.textContent='✅';}
-  // floating emoji
-  const f=document.createElement('div');f.className='float-heart';
-  f.textContent='📿';f.style.left=event.clientX+'px';f.style.top=event.clientY+'px';
-  document.body.appendChild(f);setTimeout(()=>f.remove(),900);
-  updateStats();recordToday();
-  // update counter page if visible
-  const cd=document.getElementById('cd_'+id);if(cd)cd.textContent=nc;
-  const ci=document.getElementById('ci_'+id);if(ci)ci.textContent=nc+'/'+item.count;
-  // if completed, optionally remove from counter page if visible
+function reelCount(id, el, event){
+  const item = DATA.find(d=>d.id===id); if(!item) return;
+  const cur = counters[id]||0; if(cur >= item.count) return;
+  counters[id] = cur+1; saveC();
+  const nc = counters[id], done = nc >= item.count;
+  document.getElementById('rclbl_'+id).textContent = nc+'/'+item.count;
+  const pct = Math.min(100, Math.round((nc/item.count)*100));
+  document.getElementById('rpf_'+id).style.width = pct+'%';
+  const icon = document.getElementById('rcicon_'+id);
+  if(done){ icon.classList.add('counted'); icon.textContent = '✅'; }
+  const f = document.createElement('div'); f.className = 'float-heart';
+  f.textContent = '📿'; f.style.left = event.clientX+'px'; f.style.top = event.clientY+'px';
+  document.body.appendChild(f); setTimeout(()=>f.remove(),900);
+  updateStats(); recordToday();
+  const cd = document.getElementById('cd_'+id); if(cd) cd.textContent = nc;
+  const ci = document.getElementById('ci_'+id); if(ci) ci.textContent = nc+'/'+item.count;
   if(done){
-    // record undo state
-    undoStack.push({ id: id, previousCount: cur });
-    const card=document.getElementById('card_'+id);
+    undoStack.push({ id, previousCount: cur });
+    const card = document.getElementById('card_'+id);
     if(card) card.classList.add('fade-out');
-    setTimeout(()=>{if(document.getElementById('pg-counter').classList.contains('active')) renderCards();}, 300);
+    setTimeout(()=>{ if(document.getElementById('pg-counter').classList.contains('active')) renderCards(); }, 300);
   }
 }
 
-function reelLike(id,el,event){
-  likes[id]=!likes[id];saveL();
-  const icon=document.getElementById('rlicon_'+id);
-  const lbl=document.getElementById('rllbl_'+id);
-  const stored=parseInt(localStorage.getItem('lk_'+id)||'10');
-  const newCount=likes[id]?stored+1:Math.max(0,stored-1);
-  localStorage.setItem('lk_'+id,String(newCount));
-  icon.classList.toggle('liked',likes[id]);
-  icon.textContent=likes[id]?'❤️':'🤍';
-  lbl.textContent=newCount;
+function reelLike(id, el, event){
+  likes[id] = !likes[id]; saveL();
+  const icon = document.getElementById('rlicon_'+id);
+  const lbl = document.getElementById('rllbl_'+id);
+  const stored = parseInt(localStorage.getItem('lk_'+id)||'10');
+  const newCount = likes[id] ? stored+1 : Math.max(0, stored-1);
+  localStorage.setItem('lk_'+id, String(newCount));
+  icon.classList.toggle('liked', likes[id]);
+  icon.textContent = likes[id] ? '❤️' : '🤍';
+  lbl.textContent = newCount;
   if(likes[id]){
-    const f=document.createElement('div');f.className='float-heart';
-    f.textContent='❤️';f.style.left=event.clientX+'px';f.style.top=event.clientY+'px';
-    document.body.appendChild(f);setTimeout(()=>f.remove(),900);
+    const f = document.createElement('div'); f.className = 'float-heart';
+    f.textContent = '❤️'; f.style.left = event.clientX+'px'; f.style.top = event.clientY+'px';
+    document.body.appendChild(f); setTimeout(()=>f.remove(),900);
   }
 }
 
-function reelCopy(id,el){
-  const item=DATA.find(d=>d.id===id);
-  const icon=document.getElementById('rcp_'+id);
+function reelCopy(id, el){
+  const item = DATA.find(d=>d.id===id);
+  const icon = document.getElementById('rcp_'+id);
   navigator.clipboard.writeText(item.zekr).then(()=>{
-    icon.textContent='✅';
-    setTimeout(()=>{icon.textContent='📋';},1500);
+    icon.textContent = '✅';
+    setTimeout(()=>{ icon.textContent = '📋'; },1500);
     showToast('تم النسخ ✓');
-  }).catch(()=>{showToast('النسخ غير متاح');});
+  }).catch(()=>{ showToast('النسخ غير متاح'); });
 }
 
 function reelShare(id){
-  const item=DATA.find(d=>d.id===id);
-  if(navigator.share){
-    navigator.share({text:item.zekr,title:item.cat});
-  } else {
-    navigator.clipboard.writeText(item.zekr);
-    showToast('تم النسخ للمشاركة ✓');
-  }
+  const item = DATA.find(d=>d.id===id);
+  if(navigator.share) navigator.share({ text: item.zekr, title: item.cat });
+  else { navigator.clipboard.writeText(item.zekr); showToast('تم النسخ للمشاركة ✓'); }
 }
 
 // ===== CALENDAR =====
-const MONTHS=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
-
-function changeMonth(d){calMonth=new Date(calMonth.getFullYear(),calMonth.getMonth()+d,1);renderCal();}
-
+const MONTHS = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+function changeMonth(d){ calMonth = new Date(calMonth.getFullYear(), calMonth.getMonth()+d, 1); renderCal(); }
 function renderCal(){
-  const h=getHistory();
-  const y=calMonth.getFullYear(),m=calMonth.getMonth();
-  document.getElementById('calTitle').textContent=MONTHS[m]+' '+y;
-  const first=new Date(y,m,1).getDay(),days=new Date(y,m+1,0).getDate();
-  const todayObj=new Date();
-  const isCurMonth=(todayObj.getFullYear()===y&&todayObj.getMonth()===m);
-  const con=document.getElementById('calDays');con.innerHTML='';
-
-  for(let i=0;i<first;i++){
-    const e=document.createElement('div');e.className='day-cell empty';con.appendChild(e);
-  }
-
+  const h = getHistory();
+  const y = calMonth.getFullYear(), m = calMonth.getMonth();
+  document.getElementById('calTitle').textContent = MONTHS[m]+' '+y;
+  const first = new Date(y,m,1).getDay(), days = new Date(y,m+1,0).getDate();
+  const todayObj = new Date();
+  const isCurMonth = (todayObj.getFullYear()===y && todayObj.getMonth()===m);
+  const con = document.getElementById('calDays'); con.innerHTML = '';
+  for(let i=0;i<first;i++){ const e=document.createElement('div'); e.className='day-cell empty'; con.appendChild(e); }
   for(let d=1;d<=days;d++){
-    const ds=y+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
-    const pct=h[ds]||0;
-    const isManual=manualDays[ds]||false;
-    const isToday=isCurMonth&&d===todayObj.getDate();
-    const isFuture=isCurMonth?d>todayObj.getDate():(new Date(y,m,d)>todayObj);
+    const ds = y+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+    const pct = h[ds]||0;
+    const isManual = manualDays[ds]||false;
+    const isToday = isCurMonth && d===todayObj.getDate();
+    const isFuture = isCurMonth ? d>todayObj.getDate() : (new Date(y,m,d)>todayObj);
+    const el = document.createElement('div'); el.className = 'day-cell';
+    if(isFuture){ el.classList.add('future'); el.textContent=d; con.appendChild(el); continue; }
+    if(pct>=100) el.classList.add('completed');
+    else if(isManual) el.classList.add('manual');
+    else if(pct>0) el.classList.add('partial');
+    if(isToday) el.classList.add('today');
+    el.innerHTML = `${d}<div class="pct-dot"></div>`;
+    el.title = pct>0? pct+'% مكتمل' : (isManual?'علّمته يدوياً':'');
+    el.addEventListener('click',()=>{
+      if(pct>=100){ showToast('هذا اليوم مكتمل تلقائياً ✅'); return; }
+      manualDays[ds] = !manualDays[ds]; saveM();
+      showToast(manualDays[ds]?'✓ تم التعليم اليدوي':'تم إزالة التعليم');
+      renderCal();
+    });
+    con.appendChild(el);
+  }
+  calcStreaks(h);
+}
+function calcStreaks(h){
+  const all = Object.assign({}, h);
+  Object.keys(manualDays).forEach(k=>{ if(manualDays[k]) all[k]=100; });
+  const today = new Date();
+  let streak=0, best=0, total=0, tmp=0;
+  for(let i=0;i<365;i++){
+    const d2 = new Date(today); d2.setDate(d2.getDate()-i);
+    const k = d2.toISOString().slice(0,10);
+    if((all[k]||0)>=100){ streak++; best=Math.max(best,streak); }
+    else if(i>0) break;
+  }
+  const keys = Object.keys(all).sort();
+  keys.forEach(k=>{ if((all[k]||0)>=100){ tmp++; best=Math.max(best,tmp); } else tmp=0; });
+  total = keys.filter(k=>(all[k]||0)>=100).length + Object.keys(manualDays).filter(k=>manualDays[k]&&!(h[k]>=100)).length;
+  document.getElementById('streakN').textContent = streak;
+  document.getElementById('totalN').textContent = total;
+  document.getElementById('bestN').textContent = best;
+}
 
-    const el=document.createElement('div');
-    el.className='day-cell';
-    if(isFuture){el.classList.add('future');el.textContent=d;con.appendChild(el);continue;}
-    if(pct>=100){el.classList.add('completed');}
-    else if(isManual){el.classList.add('manual');}
-    else if(pct>0){el.classList.add('partial');}
-    if(isToday){el.classList.add('today');}
-    el.innerHTML=`${d}<div class="pct-dot"></div>`;
-    el.title=pct>0
+// ===== INIT =====
+load(); buildTabs(); renderCards(); recordToday();
+</script>
+
+<!-- Service Worker Registration -->
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js')
+      .then(reg => console.log('Service Worker registered', reg))
+      .catch(err => console.error('Service Worker registration failed', err));
+  }
+</script>
+</body>
+</html>
